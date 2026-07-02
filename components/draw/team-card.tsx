@@ -1,3 +1,4 @@
+import { Star } from "lucide-react";
 import type { DrawnTeam } from "@/lib/types";
 
 interface TeamCardProps {
@@ -21,8 +22,13 @@ export function TeamCard({ team, showStrength }: TeamCardProps) {
           <li key={player.id} className="flex items-center justify-between">
             <span className="truncate">{player.name}</span>
             {showStrength && (
-              <span aria-label={`Força ${player.strength}`} className="text-xs text-amber-500">
-                {"★".repeat(player.strength)}
+              <span
+                aria-label={`Força ${player.strength}`}
+                className="flex gap-0.5 text-amber-500"
+              >
+                {Array.from({ length: player.strength }, (_, i) => (
+                  <Star key={i} size={12} fill="currentColor" strokeWidth={0} aria-hidden />
+                ))}
               </span>
             )}
           </li>

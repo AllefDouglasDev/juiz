@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { RectangleVertical } from "lucide-react";
 import { CardOverlay, type CardColor } from "./card-overlay";
 import { MatchTimer } from "./match-timer";
 import { WhistleButtons } from "./whistle-buttons";
@@ -27,16 +28,18 @@ export function MatchScreen() {
         <button
           type="button"
           onClick={() => setCard("yellow")}
-          className="flex min-h-24 items-center justify-center rounded-2xl bg-yellow-400 text-lg font-bold text-black active:opacity-80"
+          className="flex min-h-24 items-center justify-center gap-2 rounded-2xl bg-yellow-400 text-lg font-bold text-black active:opacity-80"
         >
-          🟨 Amarelo
+          <RectangleVertical size={26} fill="currentColor" aria-hidden />
+          Amarelo
         </button>
         <button
           type="button"
           onClick={() => setCard("red")}
-          className="flex min-h-24 items-center justify-center rounded-2xl bg-red-600 text-lg font-bold text-white active:opacity-80"
+          className="flex min-h-24 items-center justify-center gap-2 rounded-2xl bg-red-600 text-lg font-bold text-white active:opacity-80"
         >
-          🟥 Vermelho
+          <RectangleVertical size={26} fill="currentColor" aria-hidden />
+          Vermelho
         </button>
       </section>
 

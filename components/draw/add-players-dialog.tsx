@@ -1,5 +1,6 @@
 "use client";
 
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import type { Player } from "@/lib/types";
@@ -35,9 +36,10 @@ export function AddPlayersDialog({
                 type="button"
                 onClick={() => onAdd(player)}
                 aria-label={`Adicionar ${player.name} ao jogo`}
-                className="flex min-h-9 items-center justify-center rounded-lg bg-foreground/10 px-3 text-sm font-medium active:bg-foreground/20"
+                className="flex min-h-9 items-center justify-center gap-1 rounded-lg bg-foreground/10 px-3 text-sm font-medium active:bg-foreground/20"
               >
-                + Adicionar
+                <Plus size={16} aria-hidden />
+                Adicionar
               </button>
             </li>
           ))}

@@ -1,5 +1,6 @@
 "use client";
 
+import { UserPlus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Collapsible } from "@/components/ui/collapsible";
 import type { Player } from "@/lib/types";
@@ -45,13 +46,14 @@ export function InGamePlayers({
                   aria-label={`Remover ${player.name} do jogo`}
                   className="flex size-9 items-center justify-center rounded-lg text-foreground/40 active:bg-foreground/10"
                 >
-                  ✕
+                  <X size={18} aria-hidden />
                 </button>
               </li>
             ))}
           </ul>
         )}
         <Button variant="secondary" onClick={onAddClick}>
+          <UserPlus size={18} aria-hidden />
           Adicionar jogadores
         </Button>
       </div>

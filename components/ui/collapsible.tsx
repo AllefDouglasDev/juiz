@@ -1,3 +1,4 @@
+import { ChevronDown } from "lucide-react";
 import type { ReactNode } from "react";
 
 interface CollapsibleProps {
@@ -19,12 +20,11 @@ export function Collapsible({
     >
       <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-2 px-4 py-2 [&::-webkit-details-marker]:hidden">
         {summary}
-        <span
+        <ChevronDown
+          size={18}
           aria-hidden
           className="text-foreground/50 transition-transform group-open:rotate-180"
-        >
-          ▾
-        </span>
+        />
       </summary>
       <div className="border-t border-foreground/10 p-3">{children}</div>
     </details>

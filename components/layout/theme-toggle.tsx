@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { useTheme } from "next-themes";
+import { Moon, Sun } from "lucide-react";
 
 const emptySubscribe = () => () => {};
 
@@ -30,9 +31,9 @@ export function ThemeToggle() {
       type="button"
       onClick={() => setTheme(isDark ? "light" : "dark")}
       aria-label={isDark ? "Ativar tema claro" : "Ativar tema escuro"}
-      className="flex size-11 items-center justify-center rounded-xl text-xl active:bg-foreground/10"
+      className="flex size-11 items-center justify-center rounded-xl active:bg-foreground/10"
     >
-      {isDark ? "☀️" : "🌙"}
+      {isDark ? <Sun size={22} /> : <Moon size={22} />}
     </button>
   );
 }

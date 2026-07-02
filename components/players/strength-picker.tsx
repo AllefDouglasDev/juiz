@@ -1,5 +1,6 @@
 "use client";
 
+import { Star } from "lucide-react";
 import type { Strength } from "@/lib/types";
 
 const STRENGTH_LEVELS: Strength[] = [1, 2, 3, 4, 5];
@@ -20,11 +21,11 @@ export function StrengthPicker({ value, onChange }: StrengthPickerProps) {
           aria-checked={value === level}
           aria-label={`Força ${level}`}
           onClick={() => onChange(level)}
-          className={`flex size-11 items-center justify-center rounded-xl text-2xl active:bg-foreground/10 ${
+          className={`flex size-11 items-center justify-center rounded-xl active:bg-foreground/10 ${
             level <= value ? "text-amber-500" : "text-foreground/25"
           }`}
         >
-          ★
+          <Star size={26} fill="currentColor" strokeWidth={0} aria-hidden />
         </button>
       ))}
     </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { Pencil, Star, Trash2 } from "lucide-react";
 import type { Player } from "@/lib/types";
 
 interface PlayerListProps {
@@ -7,6 +8,23 @@ interface PlayerListProps {
   onToggleInGame: (player: Player) => void;
   onEdit: (player: Player) => void;
   onDelete: (player: Player) => void;
+}
+
+function StrengthStars({ strength }: { strength: number }) {
+  return (
+    <span aria-label={`Força ${strength}`} className="flex gap-0.5">
+      {[1, 2, 3, 4, 5].map((level) => (
+        <Star
+          key={level}
+          size={14}
+          fill="currentColor"
+          strokeWidth={0}
+          aria-hidden
+          className={level <= strength ? "text-amber-500" : "text-foreground/25"}
+        />
+      ))}
+    </span>
+  );
 }
 
 export function PlayerList({
@@ -34,29 +52,24 @@ export function PlayerList({
 
           <div className="min-w-0 flex-1">
             <p className="truncate text-base font-medium">{player.name}</p>
-            <p aria-label={`Força ${player.strength}`} className="text-sm text-amber-500">
-              {"★".repeat(player.strength)}
-              <span className="text-foreground/25">
-                {"★".repeat(5 - player.strength)}
-              </span>
-            </p>
+            <StrengthStars strength={player.strength} />
           </div>
 
           <button
             type="button"
             onClick={() => onEdit(player)}
             aria-label={`Editar ${player.name}`}
-            className="flex size-11 items-center justify-center rounded-xl text-lg active:bg-foreground/10"
+            className="flex size-11 items-center justify-center rounded-xl active:bg-foreground/10"
           >
-            ✏️
+            <Pencil size={19} aria-hidden />
           </button>
           <button
             type="button"
             onClick={() => onDelete(player)}
             aria-label={`Excluir ${player.name}`}
-            className="flex size-11 items-center justify-center rounded-xl text-lg active:bg-foreground/10"
+            className="flex size-11 items-center justify-center rounded-xl text-red-600 active:bg-foreground/10"
           >
-            🗑️
+            <Trash2 size={19} aria-hidden />
           </button>
         </li>
       ))}

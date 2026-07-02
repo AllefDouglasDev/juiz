@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import { Dices, Menu, Timer, Users, X, type LucideIcon } from "lucide-react";
 
-const menuItems = [
-  { href: "/", label: "Iniciar Partida", icon: "⏱️" },
-  { href: "/players", label: "Jogadores", icon: "👥" },
-  { href: "/draw", label: "Sortear Times", icon: "🎲" },
-] as const;
+const menuItems: { href: string; label: string; icon: LucideIcon }[] = [
+  { href: "/", label: "Iniciar Partida", icon: Timer },
+  { href: "/players", label: "Jogadores", icon: Users },
+  { href: "/draw", label: "Sortear Times", icon: Dices },
+];
 
 export function BurgerMenu() {
   const [open, setOpen] = useState(false);
@@ -22,20 +23,7 @@ export function BurgerMenu() {
         aria-expanded={open}
         className="flex size-11 items-center justify-center rounded-xl active:bg-foreground/10"
       >
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          aria-hidden
-        >
-          <line x1="4" y1="6" x2="20" y2="6" />
-          <line x1="4" y1="12" x2="20" y2="12" />
-          <line x1="4" y1="18" x2="20" y2="18" />
-        </svg>
+        <Menu size={24} aria-hidden />
       </button>
 
       {/* Portal escapes the header's backdrop-blur, which would otherwise
@@ -58,9 +46,9 @@ export function BurgerMenu() {
                   type="button"
                   onClick={() => setOpen(false)}
                   aria-label="Fechar menu"
-                  className="flex size-11 items-center justify-center rounded-xl text-xl active:bg-foreground/10"
+                  className="flex size-11 items-center justify-center rounded-xl active:bg-foreground/10"
                 >
-                  ✕
+                  <X size={22} aria-hidden />
                 </button>
               </div>
               <ul className="flex flex-col p-2">
@@ -71,7 +59,7 @@ export function BurgerMenu() {
                       onClick={() => setOpen(false)}
                       className="flex min-h-12 items-center gap-3 rounded-xl px-3 text-base active:bg-foreground/10"
                     >
-                      <span aria-hidden>{item.icon}</span>
+                      <item.icon size={20} aria-hidden />
                       {item.label}
                     </Link>
                   </li>
