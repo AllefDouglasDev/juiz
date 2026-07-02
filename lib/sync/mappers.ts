@@ -1,9 +1,15 @@
 import {
   DEFAULT_DURATION_MIN,
+  DEFAULT_SCORE,
   DEFAULT_STRENGTH,
+  MAX_GOALS,
+  TEAM_COLORS,
+  type MatchScore,
   type MatchState,
   type Player,
   type Strength,
+  type TeamColor,
+  type TeamScore,
 } from "@/lib/types";
 
 // Players live keyed-by-id in Firebase (not as an array) so that two phones
@@ -108,6 +114,42 @@ export function remoteToMatch(raw: unknown): MatchState | null {
       typeof remote.durationMin === "number"
         ? remote.durationMin
         : DEFAULT_DURATION_MIN,
+    updatedAt: typeof remote.updatedAt === "number" ? remote.updatedAt : 0,
+  };
+}
+
+// The scoreboard is a flat object of scalars, so serialization is a straight
+// copy — but each field is normalized on the way down (color validated against
+// the allowed set, goals clamped) so a malformed remote can't corrupt the UI.
+export function scoreToRemote(score: MatchScore): Record<string, unknown> {
+  return {
+    home: { color: score.home.color, goals: score.home.goals },
+    away: { color: score.away.color, goals: score.away.goals },
+    updatedAt: score.updatedAt,
+  };
+}
+
+function remoteToTeamScore(raw: unknown, fallback: TeamScore): TeamScore {
+  if (!raw || typeof raw !== "object") return fallback;
+  const remote = raw as Record<string, unknown>;
+  const color = TEAM_COLORS.includes(remote.color as TeamColor)
+    ? (remote.color as TeamColor)
+    : fallback.color;
+  const goals =
+    typeof remote.goals === "number"
+      ? Math.min(MAX_GOALS, Math.max(0, Math.round(remote.goals)))
+      : fallback.goals;
+  return { color, goals };
+}
+
+export function remoteToScore(raw: unknown): MatchScore | null {
+  if (!raw || typeof raw !== "object") {
+    return null;
+  }
+  const remote = raw as Record<string, unknown>;
+  return {
+    home: remoteToTeamScore(remote.home, DEFAULT_SCORE.home),
+    away: remoteToTeamScore(remote.away, DEFAULT_SCORE.away),
     updatedAt: typeof remote.updatedAt === "number" ? remote.updatedAt : 0,
   };
 }

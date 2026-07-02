@@ -3,10 +3,18 @@
 import { useState, type FormEvent } from "react";
 import { Cloud, CloudOff, Loader2, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useLocalStorageState } from "@/hooks/use-local-storage-state";
 import { useSyncStatus } from "@/hooks/use-sync-status";
 import { isFirebaseConfigured } from "@/lib/firebase/client";
-import { normalizeWorkspaceCode, WORKSPACE_KEY } from "@/lib/sync/workspace";
+import {
+  addToHistory,
+  EMPTY_HISTORY,
+  normalizeWorkspaceCode,
+  WORKSPACE_ENABLED_KEY,
+  WORKSPACE_HISTORY_KEY,
+  WORKSPACE_KEY,
+} from "@/lib/sync/workspace";
 
 const NO_CODE = "";
 
@@ -35,6 +43,14 @@ const STATUS_BADGE = {
 
 export function SettingsScreen() {
   const [savedCode, setSavedCode] = useLocalStorageState(WORKSPACE_KEY, NO_CODE);
+  const [enabled, setEnabled] = useLocalStorageState(
+    WORKSPACE_ENABLED_KEY,
+    true
+  );
+  const [history, setHistory] = useLocalStorageState(
+    WORKSPACE_HISTORY_KEY,
+    EMPTY_HISTORY
+  );
   const [draft, setDraft] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const status = useSyncStatus();
@@ -60,6 +76,15 @@ export function SettingsScreen() {
       return;
     }
     setSavedCode(code);
+    setHistory((prev) => addToHistory(prev, code));
+    setDraft(null);
+    setError(null);
+  }
+
+  function activate(code: string) {
+    setSavedCode(code);
+    setEnabled(true);
+    setHistory((prev) => addToHistory(prev, code));
     setDraft(null);
     setError(null);
   }
@@ -95,6 +120,17 @@ export function SettingsScreen() {
         <Button type="submit">Salvar</Button>
       </form>
 
+      <div className="flex flex-col gap-1">
+        <Checkbox
+          label="Sincronização ativa"
+          checked={enabled}
+          onChange={(event) => setEnabled(event.target.checked)}
+        />
+        <span className="text-sm text-foreground/50">
+          Desmarque para usar só este aparelho, mesmo com um código salvo.
+        </span>
+      </div>
+
       <div
         aria-live="polite"
         className={`flex items-center gap-2 text-sm ${badge.className}`}
@@ -106,6 +142,38 @@ export function SettingsScreen() {
         />
         {badge.label}
       </div>
+
+      {history.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <span className="text-sm font-medium">Rachas recentes</span>
+          <ul className="flex flex-col gap-2">
+            {history.map((code) => {
+              const isCurrent = code === savedCode;
+              return (
+                <li
+                  key={code}
+                  className="flex items-center justify-between gap-3 rounded-xl border border-foreground/15 px-3 py-2"
+                >
+                  <span className="truncate text-base">{code}</span>
+                  {isCurrent ? (
+                    <span className="shrink-0 text-sm text-foreground/50">
+                      atual
+                    </span>
+                  ) : (
+                    <Button
+                      variant="secondary"
+                      className="shrink-0 px-3"
+                      onClick={() => activate(code)}
+                    >
+                      Ativar
+                    </Button>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
 
       {savedCode !== "" && !isFirebaseConfigured() && (
         <p className="text-sm text-amber-600">

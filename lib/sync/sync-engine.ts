@@ -15,13 +15,15 @@ import {
   removeStoredValue,
   setStoredValue,
 } from "@/lib/storage/local-store";
-import type { MatchState, Player } from "@/lib/types";
+import type { MatchScore, MatchState, Player } from "@/lib/types";
 import {
   matchToRemote,
   playersToRecord,
   playerToRemote,
   recordToPlayers,
   remoteToMatch,
+  remoteToScore,
+  scoreToRemote,
 } from "./mappers";
 
 export type SyncStatus = "no-code" | "connecting" | "connected" | "offline";
@@ -73,6 +75,13 @@ const NODES: SyncedNode[] = [
     deserialize: remoteToMatch,
     serialize: (value) =>
       value ? matchToRemote(value as MatchState) : null,
+  },
+  {
+    localKey: "juiz:score",
+    remoteChild: "score",
+    deserialize: remoteToScore,
+    serialize: (value) =>
+      value ? scoreToRemote(value as MatchScore) : null,
   },
 ];
 

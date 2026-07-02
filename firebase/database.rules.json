@@ -55,6 +55,23 @@
           "updatedAt": { ".validate": "newData.isNumber()" },
           "$other": { ".validate": false }
         },
+        "score": {
+          ".validate": "newData.hasChildren(['home', 'away', 'updatedAt'])",
+          "home": {
+            ".validate": "newData.hasChildren(['color', 'goals'])",
+            "color": { ".validate": "newData.isString() && newData.val().length <= 12" },
+            "goals": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 99" },
+            "$other": { ".validate": false }
+          },
+          "away": {
+            ".validate": "newData.hasChildren(['color', 'goals'])",
+            "color": { ".validate": "newData.isString() && newData.val().length <= 12" },
+            "goals": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 99" },
+            "$other": { ".validate": false }
+          },
+          "updatedAt": { ".validate": "newData.isNumber()" },
+          "$other": { ".validate": false }
+        },
         "$other": { ".validate": false }
       }
     }

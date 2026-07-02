@@ -56,3 +56,38 @@ export interface MatchState {
   durationMin: number;
   updatedAt: number; // when the last action happened (server clock)
 }
+
+// Colors a team can wear on the scoreboard. Stored as a slug (not a CSS
+// class) so the value survives Firebase and maps to Tailwind in the UI.
+export const TEAM_COLORS = [
+  "blue",
+  "red",
+  "green",
+  "yellow",
+  "black",
+  "white",
+  "orange",
+  "purple",
+] as const;
+export type TeamColor = (typeof TEAM_COLORS)[number];
+
+export interface TeamScore {
+  color: TeamColor;
+  goals: number;
+}
+
+export const MAX_GOALS = 99;
+
+// The live scoreboard, shared across devices when a workspace code is set
+// (mirrored like MatchState). Last-write-wins per node — fine for a placar.
+export interface MatchScore {
+  home: TeamScore;
+  away: TeamScore;
+  updatedAt: number; // server clock (serverNow())
+}
+
+export const DEFAULT_SCORE: MatchScore = {
+  home: { color: "blue", goals: 0 },
+  away: { color: "red", goals: 0 },
+  updatedAt: 0,
+};

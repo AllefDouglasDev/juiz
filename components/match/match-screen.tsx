@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { RectangleVertical } from "lucide-react";
 import { CardOverlay, type CardColor } from "./card-overlay";
+import { MatchScore } from "./match-score";
 import { MatchTimer } from "./match-timer";
 import { WhistleButtons } from "./whistle-buttons";
 import { AppCredits } from "@/components/layout/app-credits";
@@ -22,6 +23,8 @@ export function MatchScreen() {
   return (
     <div className="flex flex-1 flex-col gap-4">
       <MatchTimer />
+
+      <MatchScore />
 
       <WhistleButtons />
 
