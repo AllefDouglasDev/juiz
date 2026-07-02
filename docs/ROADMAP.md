@@ -189,15 +189,15 @@ Objetivo: sorteio configurável, balanceado por força (opcional) e persistido.
 
 Objetivo: cartões, timer completo e botões de apito (som ainda stub).
 
-- [ ] `components/match/card-overlay.tsx`: botões 🟨/🟥 → overlay **em tela cheia** na cor do cartão (`fixed inset-0 z-50`); toque em qualquer lugar dispensa
-- [ ] `hooks/use-countdown.ts` (timestamp-based, conforme arquitetura)
-- [ ] `components/match/match-timer.tsx`: display grande do restante (mm:ss) + menor do decorrido; play/pause; **Reset** com confirmação; **+1 min** com confirmação; duração configurável persistida (`juiz:timer:duration`)
-- [ ] Ao zerar: estado "finalizado" + gancho de apito (stub até a Fase 5)
-- [ ] `components/match/whistle-buttons.tsx`: 3 botões grandes — **Curto**, **Duplo**, **Longo** — chamando o player (stub/no-op por enquanto)
-- [ ] Montar `app/page.tsx` (layout vertical mobile: timer no topo, apitos no meio, cartões embaixo)
-- [ ] Verificar: timer preciso com aba em background; confirmações funcionam; overlay cobre a tela toda
+- [x] `components/match/card-overlay.tsx`: botões 🟨/🟥 → overlay **em tela cheia** na cor do cartão (portal para `document.body`, `z-[60]`); toque em qualquer lugar dispensa
+- [x] `hooks/use-countdown.ts` (timestamp-based; "now" atualizado só em ticks/ações — o lint novo do React proíbe `Date.now()` durante render; catch-up em `visibilitychange`)
+- [x] `components/match/match-timer.tsx`: display grande do restante (mm:ss) + menor do decorrido; play/pause; **Reset** com confirmação; **+1 min** com confirmação; duração configurável persistida (`juiz:timer:duration`, default 10 min, dropdown 1–60, editável só com timer parado)
+- [x] Ao zerar: estado "finalizado" ("Fim do tempo!") + apito longo (stub até a Fase 5); **+1 min após o fim retoma o jogo**
+- [x] `components/match/whistle-buttons.tsx`: 3 botões grandes — **Curto**, **Duplo**, **Longo** — chamando `lib/audio/whistle-player.ts` (stub com `console.debug`)
+- [x] Montar `app/page.tsx` (layout vertical mobile: timer no topo, apitos no meio, cartões embaixo — composição em `components/match/match-screen.tsx`)
+- [x] Verificar: timer preciso com aba em background; confirmações funcionam; overlay cobre a tela toda
 
-**Blockers:** nenhum (áudio real fica para a Fase 5).
+**Blockers:** nenhum. ✅ **Fase concluída** (áudio real na Fase 5).
 
 ---
 
