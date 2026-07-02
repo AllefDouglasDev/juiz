@@ -221,20 +221,22 @@ Objetivo: 3 apitos reais, o mais alto possível, + apito automático no fim do t
 
 Objetivo: app instalável na tela de início, com shell offline e experiência nativa no iOS.
 
-- [ ] `app/manifest.ts` (`MetadataRoute.Manifest`): nome/descrição em pt-BR, `display: 'standalone'`, `start_url: '/'`, ícones 192/512, cores de tema/fundo
-- [ ] 🔓 Resolver blocker: gerar ícones do app — 192×192, 512×512 (`public/`) + `app/apple-icon.png` 180×180 (Next gera a tag `apple-touch-icon` automaticamente)
-- [ ] Metadata Apple no layout: `appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'Juiz de Futebol' }`
-- [ ] `viewport`: `viewportFit: 'cover'` + CSS `env(safe-area-inset-*)` no header sticky e no `card-overlay` (notch/Dynamic Island)
-- [ ] `components/pwa/install-prompt.tsx`: detecta iOS (userAgent) e `display-mode: standalone` (matchMedia); se não instalado, banner em pt-BR: "Toque em Compartilhar → Adicionar à Tela de Início" (iOS **não** tem `beforeinstallprompt`)
-- [ ] `public/sw.js`: service worker **mínimo escrito à mão** (cache do shell, network-first com fallback) — **não usar Serwist** (exige webpack; Next 16 usa Turbopack) + `components/pwa/sw-register.tsx`
-- [ ] Screen Wake Lock (`navigator.wakeLock.request('screen')`) enquanto o timer roda — tela não apaga durante a partida (iOS ≥ 16.4)
-- [ ] Passada final: touch targets ≥ 44px, revisão dos textos em pt-BR
-- [ ] Teste real em iPhone instalado na tela de início: abrir offline, áudio no modo standalone, chave de silêncio, localStorage persistindo, safe areas
+- [x] `app/manifest.ts` (`MetadataRoute.Manifest`): "Racha dos Primos", pt-BR, `display: 'standalone'`, `start_url: '/'`, ícones 192/512 (+ variante maskable), `background_color` escuro, `theme_color` verde, `orientation: portrait`
+- [x] 🔓 Blocker resolvido: ícones **gerados via canvas** (campo verde + bola ⚽) — `public/icon-192.png`, `public/icon-512.png` + `app/apple-icon.png` 180×180 (Next gera a tag `apple-touch-icon` automaticamente)
+- [x] Metadata Apple no layout: `appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'Racha dos Primos' }`
+- [x] `viewport`: `viewportFit: 'cover'` + `env(safe-area-inset-*)` no header, menu, `card-overlay`, `main` e banner de instalação (notch/Dynamic Island)
+- [x] `components/pwa/install-prompt.tsx`: detecta iOS (userAgent + `navigator.standalone`) e `display-mode: standalone`; se não instalado, banner fixo em pt-BR "Toque em Compartilhar → Adicionar à Tela de Início", dispensável (persistido em `juiz:install-prompt-dismissed`)
+- [x] `public/sw.js`: service worker mínimo escrito à mão (shell + sons pré-cacheados, network-first com fallback) + `components/pwa/sw-register.tsx` (registra só em produção)
+- [x] Screen Wake Lock (`hooks/use-wake-lock.ts`) enquanto o timer roda, com re-aquisição em `visibilitychange` (iOS ≥ 16.4)
+- [x] Passada final: touch targets ≥ 44px, textos em pt-BR revisados
+- [ ] Teste real em iPhone instalado na tela de início: abrir offline, áudio no modo standalone, chave de silêncio, localStorage persistindo, safe areas — *pendente: só com o aparelho físico*
 
 **Blockers:**
-- 🚫 **Ícones do app** (192/512 + apple-touch 180) precisam ser criados/gerados (ex.: realfavicongenerator.net).
+- ✅ Ícones: resolvido (gerados via canvas).
 - ⚠️ Instalação exige **HTTPS** — produção via Vercel resolve; teste local com `next dev --experimental-https`.
 - ⚠️ Validação final depende de um **iPhone físico** (simuladores não reproduzem áudio/silêncio/wake lock fielmente).
+
+**Verificado em servidor de produção local:** manifest servido com tags Apple corretas; SW ativado com `juiz-v1` cacheando `/`, `/players`, `/draw` e os 2 sons; **offline real testado** (servidor derrubado → página inteira servida do cache); banner de instalação aparece com UA de iPhone e o dispensar persiste após reload.
 
 ---
 
