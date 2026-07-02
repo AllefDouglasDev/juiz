@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { Pause, Play, Plus, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Select } from "@/components/ui/select";
 import { useCountdown } from "@/hooks/use-countdown";
 import { useLocalStorageState } from "@/hooks/use-local-storage-state";
+import { useWakeLock } from "@/hooks/use-wake-lock";
 import { playWhistle } from "@/lib/audio/whistle-player";
 
 const DEFAULT_DURATION_MIN = 10;
@@ -36,15 +38,18 @@ export function MatchTimer() {
   const isRunning = countdown.status === "running";
   const isFinished = countdown.status === "finished";
 
+  // Keep the referee's screen awake while the clock is running.
+  useWakeLock(isRunning);
+
   return (
     <section
       aria-label="Timer da partida"
-      className="flex flex-col items-center gap-4 rounded-2xl border border-foreground/10 p-5"
+      className="flex flex-col items-center gap-4 rounded-2xl border border-foreground/10 p-4 sm:p-5"
     >
       <div className="flex flex-col items-center gap-1">
         <p
           role="timer"
-          className={`font-mono text-7xl font-bold tabular-nums ${
+          className={`font-mono text-[clamp(3rem,19vw,4.5rem)] font-bold tabular-nums ${
             isFinished ? "text-red-600" : ""
           }`}
         >
@@ -58,34 +63,40 @@ export function MatchTimer() {
         )}
       </div>
 
-      <div className="flex w-full gap-3">
+      <div className="flex w-full flex-col gap-2">
         {isRunning ? (
-          <Button className="flex-1" onClick={countdown.pause}>
-            ⏸ Pausar
+          <Button className="w-full" onClick={countdown.pause}>
+            <Pause size={18} aria-hidden />
+            Pausar
           </Button>
         ) : (
           <Button
-            className="flex-1"
+            className="w-full"
             onClick={countdown.start}
             disabled={isFinished}
           >
-            ▶ Iniciar
+            <Play size={18} aria-hidden />
+            Iniciar
           </Button>
         )}
-        <Button
-          variant="secondary"
-          className="flex-1"
-          onClick={() => setConfirmingAddTime(true)}
-        >
-          +1 min
-        </Button>
-        <Button
-          variant="secondary"
-          className="flex-1"
-          onClick={() => setConfirmingReset(true)}
-        >
-          Resetar
-        </Button>
+        <div className="grid grid-cols-2 gap-2">
+          <Button
+            variant="secondary"
+            className="min-w-0"
+            onClick={() => setConfirmingAddTime(true)}
+          >
+            <Plus size={18} aria-hidden className="shrink-0" />
+            1 min
+          </Button>
+          <Button
+            variant="secondary"
+            className="min-w-0"
+            onClick={() => setConfirmingReset(true)}
+          >
+            <RotateCcw size={18} aria-hidden className="shrink-0" />
+            Resetar
+          </Button>
+        </div>
       </div>
 
       <label className="flex items-center gap-2 text-sm">
