@@ -1,0 +1,62 @@
+{
+  "rules": {
+    "workspaces": {
+      "$code": {
+        ".read": true,
+        ".write": "$code.length >= 4 && $code.length <= 64 && $code.matches(/^[a-z0-9_-]+$/)",
+        "players": {
+          "$playerId": {
+            ".validate": "newData.hasChildren(['name', 'strength', 'inGame'])",
+            "name": { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40" },
+            "strength": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 5" },
+            "inGame": { ".validate": "newData.isBoolean()" },
+            "createdAt": { ".validate": "newData.isNumber()" },
+            "$other": { ".validate": false }
+          }
+        },
+        "drawSettings": {
+          ".validate": "newData.hasChildren(['teamCount', 'playersPerTeam', 'useStrength'])",
+          "teamCount": { ".validate": "newData.isNumber() && newData.val() >= 2 && newData.val() <= 10" },
+          "playersPerTeam": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 11" },
+          "useStrength": { ".validate": "newData.isBoolean()" },
+          "$other": { ".validate": false }
+        },
+        "drawResult": {
+          ".validate": "newData.hasChildren(['drawnAt', 'useStrength', 'teams'])",
+          "drawnAt": { ".validate": "newData.isString() && newData.val().length <= 40" },
+          "useStrength": { ".validate": "newData.isBoolean()" },
+          "teams": {
+            "$teamIndex": {
+              ".validate": "$teamIndex.matches(/^[0-9]+$/) && newData.hasChildren(['name', 'players', 'totalStrength'])",
+              "name": { ".validate": "newData.isString() && newData.val().length <= 40" },
+              "totalStrength": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100" },
+              "players": {
+                "$playerIndex": {
+                  ".validate": "$playerIndex.matches(/^[0-9]+$/) && newData.hasChildren(['id', 'name', 'strength'])",
+                  "id": { ".validate": "newData.isString() && newData.val().length <= 64" },
+                  "name": { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40" },
+                  "strength": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 5" },
+                  "$other": { ".validate": false }
+                }
+              },
+              "$other": { ".validate": false }
+            }
+          },
+          "$other": { ".validate": false }
+        },
+        "match": {
+          ".validate": "newData.hasChildren(['status', 'remainingMs', 'elapsedBeforeMs', 'durationMin', 'updatedAt'])",
+          "status": { ".validate": "newData.isString() && (newData.val() === 'idle' || newData.val() === 'running' || newData.val() === 'paused' || newData.val() === 'finished')" },
+          "endAt": { ".validate": "newData.isNumber() && newData.val() > 1700000000000" },
+          "runStartedAt": { ".validate": "newData.isNumber() && newData.val() > 1700000000000" },
+          "remainingMs": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 14400000" },
+          "elapsedBeforeMs": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 86400000" },
+          "durationMin": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 60" },
+          "updatedAt": { ".validate": "newData.isNumber()" },
+          "$other": { ".validate": false }
+        },
+        "$other": { ".validate": false }
+      }
+    }
+  }
+}

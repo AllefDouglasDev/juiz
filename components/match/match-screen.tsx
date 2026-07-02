@@ -5,6 +5,7 @@ import { RectangleVertical } from "lucide-react";
 import { CardOverlay, type CardColor } from "./card-overlay";
 import { MatchTimer } from "./match-timer";
 import { WhistleButtons } from "./whistle-buttons";
+import { AppCredits } from "@/components/layout/app-credits";
 import { initWhistlePlayer } from "@/lib/audio/whistle-player";
 
 export function MatchScreen() {
@@ -19,7 +20,7 @@ export function MatchScreen() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-1 flex-col gap-4">
       <MatchTimer />
 
       <WhistleButtons />
@@ -42,6 +43,10 @@ export function MatchScreen() {
           Vermelho
         </button>
       </section>
+
+      <footer className="mt-auto flex justify-center pt-2">
+        <AppCredits />
+      </footer>
 
       <CardOverlay card={card} onDismiss={() => setCard(null)} />
     </div>

@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
+import { SyncProvider } from "./sync-provider";
 
 export function AppProviders({ children }: { children: ReactNode }) {
   // Data lives in localStorage, so it never goes stale behind our back.
@@ -21,7 +22,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        {children}
+        <SyncProvider>{children}</SyncProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

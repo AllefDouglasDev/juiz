@@ -5,12 +5,10 @@ import { Pause, Play, Plus, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Select } from "@/components/ui/select";
-import { useCountdown } from "@/hooks/use-countdown";
-import { useLocalStorageState } from "@/hooks/use-local-storage-state";
+import { useMatchState } from "@/hooks/use-match-state";
 import { useWakeLock } from "@/hooks/use-wake-lock";
 import { playWhistle } from "@/lib/audio/whistle-player";
 
-const DEFAULT_DURATION_MIN = 10;
 const DURATION_OPTIONS_MIN = [
   ...Array.from({ length: 15 }, (_, i) => i + 1),
   20, 25, 30, 35, 40, 45, 50, 55, 60,
@@ -25,18 +23,12 @@ function formatTime(ms: number, rounding: "up" | "down"): string {
 }
 
 export function MatchTimer() {
-  const [durationMin, setDurationMin] = useLocalStorageState(
-    "juiz:timer:duration",
-    DEFAULT_DURATION_MIN
-  );
-  const countdown = useCountdown(durationMin * 60_000, () =>
-    playWhistle("long")
-  );
+  const match = useMatchState(() => playWhistle("long"));
   const [confirmingReset, setConfirmingReset] = useState(false);
   const [confirmingAddTime, setConfirmingAddTime] = useState(false);
 
-  const isRunning = countdown.status === "running";
-  const isFinished = countdown.status === "finished";
+  const isRunning = match.status === "running";
+  const isFinished = match.status === "finished";
 
   // Keep the referee's screen awake while the clock is running.
   useWakeLock(isRunning);
@@ -53,10 +45,10 @@ export function MatchTimer() {
             isFinished ? "text-red-600" : ""
           }`}
         >
-          {formatTime(countdown.remainingMs, "up")}
+          {formatTime(match.remainingMs, "up")}
         </p>
         <p className="text-sm text-foreground/50">
-          Decorrido: {formatTime(countdown.elapsedMs, "down")}
+          Decorrido: {formatTime(match.elapsedMs, "down")}
         </p>
         {isFinished && (
           <p className="font-semibold text-red-600">Fim do tempo!</p>
@@ -65,14 +57,14 @@ export function MatchTimer() {
 
       <div className="flex w-full flex-col gap-2">
         {isRunning ? (
-          <Button className="w-full" onClick={countdown.pause}>
+          <Button className="w-full" onClick={match.pause}>
             <Pause size={18} aria-hidden />
             Pausar
           </Button>
         ) : (
           <Button
             className="w-full"
-            onClick={countdown.start}
+            onClick={match.start}
             disabled={isFinished}
           >
             <Play size={18} aria-hidden />
@@ -102,9 +94,9 @@ export function MatchTimer() {
       <label className="flex items-center gap-2 text-sm">
         <span className="font-medium">Duração:</span>
         <Select
-          value={durationMin}
-          disabled={countdown.status !== "idle"}
-          onChange={(event) => setDurationMin(Number(event.target.value))}
+          value={match.durationMin}
+          disabled={match.status !== "idle"}
+          onChange={(event) => match.setDuration(Number(event.target.value))}
           className="min-h-9 py-0"
         >
           {DURATION_OPTIONS_MIN.map((minutes) => (
@@ -122,7 +114,7 @@ export function MatchTimer() {
         confirmLabel="Resetar"
         destructive
         onConfirm={() => {
-          countdown.reset();
+          match.reset();
           setConfirmingReset(false);
         }}
         onCancel={() => setConfirmingReset(false)}
@@ -134,7 +126,7 @@ export function MatchTimer() {
         message="Adicionar 1 minuto ao tempo da partida?"
         confirmLabel="+1 min"
         onConfirm={() => {
-          countdown.addTime(60_000);
+          match.addTime(60_000);
           setConfirmingAddTime(false);
         }}
         onCancel={() => setConfirmingAddTime(false)}

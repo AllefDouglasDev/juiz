@@ -3,12 +3,22 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { Dices, Menu, Timer, Users, X, type LucideIcon } from "lucide-react";
+import {
+  Dices,
+  Menu,
+  Settings,
+  Timer,
+  Users,
+  X,
+  type LucideIcon,
+} from "lucide-react";
+import { AppCredits } from "./app-credits";
 
 const menuItems: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/", label: "Iniciar Partida", icon: Timer },
   { href: "/players", label: "Jogadores", icon: Users },
   { href: "/draw", label: "Sortear Times", icon: Dices },
+  { href: "/settings", label: "Configurações", icon: Settings },
 ];
 
 export function BurgerMenu() {
@@ -65,6 +75,9 @@ export function BurgerMenu() {
                   </li>
                 ))}
               </ul>
+              <footer className="mt-auto border-t border-foreground/10 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+                <AppCredits />
+              </footer>
             </nav>
           </div>,
           document.body
