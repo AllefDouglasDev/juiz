@@ -7,28 +7,23 @@ import { Dialog } from "@/components/ui/dialog";
 import { useMatchScore } from "@/hooks/use-match-score";
 import { TEAM_COLORS, type TeamColor } from "@/lib/types";
 
-// Slug → Tailwind swatch. White gets a border so it stays visible on the
-// light background; the rest are solid.
+// Slug → Tailwind swatch.
 const COLOR_SWATCH: Record<TeamColor, string> = {
   blue: "bg-blue-500",
   red: "bg-red-600",
-  green: "bg-green-600",
-  yellow: "bg-yellow-400",
   black: "bg-black",
-  white: "bg-white border border-foreground/30",
+  green: "bg-green-600",
   orange: "bg-orange-500",
-  purple: "bg-purple-600",
+  pink: "bg-pink-500",
 };
 
 const COLOR_LABEL: Record<TeamColor, string> = {
   blue: "Azul",
   red: "Vermelho",
-  green: "Verde",
-  yellow: "Amarelo",
   black: "Preto",
-  white: "Branco",
+  green: "Verde",
   orange: "Laranja",
-  purple: "Roxo",
+  pink: "Rosa",
 };
 
 export function MatchScore() {
@@ -115,9 +110,11 @@ function TeamControls({
 }: TeamControlsProps) {
   return (
     <div className="flex flex-col gap-3">
-      <span className="text-sm font-medium text-foreground/70">{label}</span>
+      <span className="text-center text-sm font-medium text-foreground/70">
+        {label}
+      </span>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap justify-center gap-2">
         {TEAM_COLORS.map((option) => (
           <button
             key={option}

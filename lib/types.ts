@@ -62,12 +62,10 @@ export interface MatchState {
 export const TEAM_COLORS = [
   "blue",
   "red",
-  "green",
-  "yellow",
   "black",
-  "white",
+  "green",
   "orange",
-  "purple",
+  "pink",
 ] as const;
 export type TeamColor = (typeof TEAM_COLORS)[number];
 
