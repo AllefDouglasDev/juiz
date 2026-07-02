@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getPlayerRepository } from "@/lib/repositories";
+import { getPlayerRepository, type ResolvedImport } from "@/lib/repositories";
 import type { NewPlayer } from "@/lib/types";
 
 export const PLAYERS_QUERY_KEY = ["players"] as const;
@@ -39,6 +39,23 @@ export function useDeletePlayer() {
   const invalidate = useInvalidatePlayers();
   return useMutation({
     mutationFn: (id: string) => getPlayerRepository().remove(id),
+    onSuccess: invalidate,
+  });
+}
+
+export function useImportPlayers() {
+  const invalidate = useInvalidatePlayers();
+  return useMutation({
+    mutationFn: (resolved: ResolvedImport) =>
+      getPlayerRepository().importPlayers(resolved),
+    onSuccess: invalidate,
+  });
+}
+
+export function useClearPlayers() {
+  const invalidate = useInvalidatePlayers();
+  return useMutation({
+    mutationFn: () => getPlayerRepository().clear(),
     onSuccess: invalidate,
   });
 }

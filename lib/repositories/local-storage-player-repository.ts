@@ -1,6 +1,6 @@
 import { getStoredValue, setStoredValue } from "@/lib/storage/local-store";
 import type { NewPlayer, Player } from "@/lib/types";
-import type { PlayerRepository } from "./player-repository";
+import type { PlayerRepository, ResolvedImport } from "./player-repository";
 
 const STORAGE_KEY = "juiz:players";
 const NO_PLAYERS: Player[] = [];
@@ -40,5 +40,28 @@ export class LocalStoragePlayerRepository implements PlayerRepository {
       STORAGE_KEY,
       players.filter((player) => player.id !== id)
     );
+  }
+
+  async importPlayers(resolved: ResolvedImport): Promise<void> {
+    const players = await this.list();
+    // Overwrite matched players in place, keeping their id/createdAt (and their
+    // position in the list).
+    const byId = new Map(players.map((player) => [player.id, player]));
+    for (const { id, data } of resolved.toUpdate) {
+      const existing = byId.get(id);
+      if (existing) byId.set(id, { ...existing, ...data });
+    }
+    const now = Date.now();
+    const created: Player[] = resolved.toCreate.map((input, index) => ({
+      ...input,
+      id: crypto.randomUUID(),
+      // Nudge createdAt per index so imported players keep their file order.
+      createdAt: now + index,
+    }));
+    setStoredValue(STORAGE_KEY, [...byId.values(), ...created]);
+  }
+
+  async clear(): Promise<void> {
+    setStoredValue(STORAGE_KEY, NO_PLAYERS);
   }
 }

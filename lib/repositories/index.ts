@@ -1,5 +1,5 @@
 import { LocalStoragePlayerRepository } from "./local-storage-player-repository";
-import type { PlayerRepository } from "./player-repository";
+import type { PlayerRepository, ResolvedImport } from "./player-repository";
 
 let repository: PlayerRepository | null = null;
 
@@ -9,4 +9,4 @@ export function getPlayerRepository(): PlayerRepository {
   return repository;
 }
 
-export type { PlayerRepository };
+export type { PlayerRepository, ResolvedImport };
