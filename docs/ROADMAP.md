@@ -205,15 +205,15 @@ Objetivo: cartões, timer completo e botões de apito (som ainda stub).
 
 Objetivo: 3 apitos reais, o mais alto possível, + apito automático no fim do tempo.
 
-- [ ] 🔓 Resolver blocker: baixar 3 sons de apito (curto, duplo/duas notas, longo) de fonte **CC0/livre** — pixabay.com/sound-effects ou freesound.org — e **verificar a licença**
-- [ ] Colocar em `public/sounds/` (`whistle-short.mp3`, `whistle-double.mp3`, `whistle-long.mp3`)
-- [ ] `lib/audio/whistle-player.ts`: AudioContext desbloqueado no primeiro gesto, pré-decodificação, `GainNode` (~2.0) + `DynamicsCompressorNode`, um `BufferSource` por toque
-- [ ] Ligar os 3 botões + apito longo ao timer zerar
-- [ ] Testar em celular real (iPhone principalmente): latência, volume, **comportamento com a chave de silêncio ativada**
+- [x] 🔓 Blocker resolvido: 2 sons **CC0 do freesound.org** baixados — curto (#538422, 0,54s) e longo (#218318, 3,3s). O **duplo é gerado em runtime** (dois sopros curtos agendados com 0,45s de intervalo via Web Audio) — não existia um duplo CC0 decente e não há ffmpeg na máquina para concatenar.
+- [x] Colocar em `public/sounds/` (`whistle-short.mp3`, `whistle-long.mp3`)
+- [x] `lib/audio/whistle-player.ts`: AudioContext desbloqueado no primeiro gesto (listener `pointerdown` once no match-screen), pré-decodificação, `GainNode` (2.5) + `DynamicsCompressorNode`, um `BufferSource` por toque (permite toques rápidos sobrepostos) + **fallback sintetizado** (osciladores) se os arquivos falharem
+- [x] Ligar os 3 botões + apito longo ao timer zerar
+- [ ] Testar em celular real (iPhone principalmente): latência, volume, **comportamento com a chave de silêncio ativada** — *pendente: precisa do aparelho físico (Fase 6)*
 
 **Blockers:**
-- 🚫 **Arquivos de áudio precisam ser baixados da web** (licença CC0 verificada). *Fallback para não travar: apito sintetizado via osciladores Web Audio.*
-- ⚠️ O volume máximo real é limitado pelo volume físico do aparelho (não há como ultrapassar via código).
+- ✅ Resolvido: arquivos CC0 baixados e verificados (fetch 200 + decode 48kHz OK no browser).
+- ⚠️ O volume máximo real é limitado pelo volume físico do aparelho (não há como ultrapassar via código). No iOS, a **chave de silêncio pode mutar Web Audio** — validar no aparelho.
 
 ---
 

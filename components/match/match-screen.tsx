@@ -1,12 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CardOverlay, type CardColor } from "./card-overlay";
 import { MatchTimer } from "./match-timer";
 import { WhistleButtons } from "./whistle-buttons";
+import { initWhistlePlayer } from "@/lib/audio/whistle-player";
 
 export function MatchScreen() {
   const [card, setCard] = useState<CardColor | null>(null);
+
+  // Unlock the AudioContext and preload the whistle sounds on the very
+  // first touch anywhere, so the first whistle tap plays instantly.
+  useEffect(() => {
+    const unlock = () => initWhistlePlayer();
+    window.addEventListener("pointerdown", unlock, { once: true });
+    return () => window.removeEventListener("pointerdown", unlock);
+  }, []);
 
   return (
     <div className="flex flex-col gap-4">
