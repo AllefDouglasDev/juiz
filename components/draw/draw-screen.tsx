@@ -4,7 +4,7 @@ import { useState } from "react";
 import { AddPlayersDialog } from "./add-players-dialog";
 import { DrawControls } from "./draw-controls";
 import { InGamePlayers } from "./in-game-players";
-import { TeamCard } from "./team-card";
+import { TeamEditor } from "./team-editor";
 import { usePlayers, useUpdatePlayer } from "@/hooks/use-players";
 import { useDrawResult } from "@/hooks/use-draw-result";
 import { useDrawSettings } from "@/hooks/use-draw-settings";
@@ -47,15 +47,11 @@ export function DrawScreen() {
       {result && (
         <section className="flex flex-col gap-3">
           <h2 className="text-lg font-semibold">Times sorteados</h2>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {result.teams.map((team) => (
-              <TeamCard
-                key={team.name}
-                team={team}
-                showStrength={result.useStrength}
-              />
-            ))}
-          </div>
+          <TeamEditor
+            result={result}
+            setResult={setResult}
+            showStrength={result.useStrength}
+          />
         </section>
       )}
 
