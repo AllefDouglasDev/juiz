@@ -3,19 +3,15 @@
 // chain pushes loudness to the ceiling without harsh clipping. The real
 // ceiling is always the device's physical volume.
 //
-// Sources (CC0, freesound.org): short = #538422, long = #218318.
-// "double" is the short blow scheduled twice — peep-peep, referee style.
+// Source (CC0, freesound.org): long = #218318.
 
-export type WhistleType = "short" | "double" | "long";
+export type WhistleType = "long";
 
-type BufferName = "short" | "long";
+type BufferName = "long";
 
 const SOUND_URLS: Record<BufferName, string> = {
-  short: "/sounds/whistle-short.mp3",
   long: "/sounds/whistle-long.mp3",
 };
-
-const DOUBLE_GAP_S = 0.45;
 
 let context: AudioContext | null = null;
 let output: AudioNode | null = null;
@@ -105,22 +101,8 @@ export function playWhistle(type: WhistleType): void {
   const ctx = getContext();
 
   const play = () => {
-    const short = buffers.get("short");
     const long = buffers.get("long");
     switch (type) {
-      case "short":
-        if (short) playBuffer(ctx, short);
-        else playSynthWhistle(ctx, 0.35);
-        break;
-      case "double":
-        if (short) {
-          playBuffer(ctx, short);
-          playBuffer(ctx, short, DOUBLE_GAP_S);
-        } else {
-          playSynthWhistle(ctx, 0.3);
-          playSynthWhistle(ctx, 0.3, DOUBLE_GAP_S);
-        }
-        break;
       case "long":
         if (long) playBuffer(ctx, long);
         else playSynthWhistle(ctx, 1.5);

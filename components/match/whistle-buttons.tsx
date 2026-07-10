@@ -1,28 +1,35 @@
 "use client";
 
-import { Megaphone, Volume1, Volume2, type LucideIcon } from "lucide-react";
-import { playWhistle, type WhistleType } from "@/lib/audio/whistle-player";
-
-const WHISTLES: { type: WhistleType; label: string; icon: LucideIcon }[] = [
-  { type: "short", label: "Curto", icon: Volume1 },
-  { type: "double", label: "Duplo", icon: Volume2 },
-  { type: "long", label: "Longo", icon: Megaphone },
-];
+import { useState } from "react";
+import { Megaphone, Users } from "lucide-react";
+import { TeamsDialog } from "./teams-dialog";
+import { playWhistle } from "@/lib/audio/whistle-player";
 
 export function WhistleButtons() {
+  const [teamsOpen, setTeamsOpen] = useState(false);
+
   return (
-    <section aria-label="Apitos" className="grid grid-cols-3 gap-3">
-      {WHISTLES.map((whistle) => (
+    <>
+      <section aria-label="Apito e times" className="grid grid-cols-2 gap-3">
         <button
-          key={whistle.type}
           type="button"
-          onClick={() => playWhistle(whistle.type)}
+          onClick={() => playWhistle("long")}
           className="flex min-h-20 flex-col items-center justify-center gap-1 rounded-2xl border border-foreground/10 text-base font-semibold active:bg-foreground/10"
         >
-          <whistle.icon size={28} aria-hidden />
-          {whistle.label}
+          <Megaphone size={28} aria-hidden />
+          Longo
         </button>
-      ))}
-    </section>
+        <button
+          type="button"
+          onClick={() => setTeamsOpen(true)}
+          className="flex min-h-20 flex-col items-center justify-center gap-1 rounded-2xl border border-foreground/10 text-base font-semibold active:bg-foreground/10"
+        >
+          <Users size={28} aria-hidden />
+          Times
+        </button>
+      </section>
+
+      <TeamsDialog open={teamsOpen} onClose={() => setTeamsOpen(false)} />
+    </>
   );
 }
