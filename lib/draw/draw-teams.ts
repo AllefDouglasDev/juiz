@@ -59,6 +59,18 @@ function snakeDraft(players: Player[], sizes: number[]): Player[][] {
   return teams;
 }
 
+// Extra team holding the players who didn't fit the drawn teams. Being a real
+// team keeps them visible and editable (swap/substitute) like everyone else.
+export const LEFT_OUT_TEAM_NAME = "De fora";
+
+function toDrawnTeam(name: string, players: readonly Player[]): DrawnTeam {
+  return {
+    name,
+    players: players.map(({ id, name, strength }) => ({ id, name, strength })),
+    totalStrength: players.reduce((sum, player) => sum + player.strength, 0),
+  };
+}
+
 export function drawTeams(
   inGamePlayers: readonly Player[],
   settings: DrawSettings
@@ -66,6 +78,7 @@ export function drawTeams(
   const shuffled = shuffle(inGamePlayers);
   const capacity = settings.teamCount * settings.playersPerTeam;
   const selected = shuffled.slice(0, Math.min(shuffled.length, capacity));
+  const leftOut = shuffled.slice(selected.length);
   const sizes = computeTeamSizes(
     selected.length,
     settings.teamCount,
@@ -76,11 +89,12 @@ export function drawTeams(
     ? snakeDraft(selected, sizes)
     : dealSequentially(selected, sizes);
 
-  const teams: DrawnTeam[] = grouped.map((players, index) => ({
-    name: `Time ${index + 1}`,
-    players: players.map(({ id, name, strength }) => ({ id, name, strength })),
-    totalStrength: players.reduce((sum, player) => sum + player.strength, 0),
-  }));
+  const teams = grouped.map((players, index) =>
+    toDrawnTeam(`Time ${index + 1}`, players)
+  );
+  if (leftOut.length > 0) {
+    teams.push(toDrawnTeam(LEFT_OUT_TEAM_NAME, leftOut));
+  }
 
   return {
     drawnAt: new Date().toISOString(),
