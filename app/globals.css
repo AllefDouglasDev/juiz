@@ -66,10 +66,3 @@ body {
 .player-swapping {
   animation: juiz-swap 0.38s ease-out;
 }
-
-@media (prefers-reduced-motion: reduce) {
-  .player-selected,
-  .player-swapping {
-    animation: none;
-  }
-}

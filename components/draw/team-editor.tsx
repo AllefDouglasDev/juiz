@@ -1,12 +1,7 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useRef, useState } from "react";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Star } from "lucide-react";
 import { TeamCard } from "./team-card";
 import { TeamSubDrawDialog } from "./team-sub-draw-dialog";
@@ -35,7 +30,6 @@ interface TeamEditorProps {
 }
 
 const SWAP_ANIMATION_MS = 400;
-const MOVE_ANIMATION_MS = 400;
 
 export function TeamEditor({
   result,
@@ -59,53 +53,11 @@ export function TeamEditor({
     []
   );
 
-  // FLIP move animation: every player row registers its DOM node by player id.
-  // A player that changes list (team ↔ team, team ↔ bench) remounts as a new
-  // node under the same id, so stale entries are skipped via `isConnected`.
-  const playerEls = useRef(new Map<string, HTMLElement>());
-  const prevRects = useRef<Map<string, DOMRect> | null>(null);
-
-  const registerPlayerEl = useCallback(
-    (id: string, el: HTMLElement | null) => {
-      if (el) playerEls.current.set(id, el);
-    },
-    []
-  );
-
-  // Snapshot every player's position, then apply the edit; the layout effect
-  // below slides each moved player from its old spot to the new one.
-  function applyEdit(next: DrawResult) {
-    const rects = new Map<string, DOMRect>();
-    for (const [id, el] of playerEls.current) {
-      if (el.isConnected) rects.set(id, el.getBoundingClientRect());
-    }
-    prevRects.current = rects;
-    setResult(next);
-  }
-
-  useLayoutEffect(() => {
-    const rects = prevRects.current;
-    prevRects.current = null;
-    if (!rects) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    for (const [id, el] of playerEls.current) {
-      const prev = rects.get(id);
-      if (!prev || !el.isConnected || typeof el.animate !== "function") {
-        continue;
-      }
-      const next = el.getBoundingClientRect();
-      const dx = prev.left - next.left;
-      const dy = prev.top - next.top;
-      if (Math.abs(dx) < 1 && Math.abs(dy) < 1) continue;
-      el.animate(
-        [
-          { transform: `translate(${dx}px, ${dy}px)` },
-          { transform: "translate(0, 0)" },
-        ],
-        { duration: MOVE_ANIMATION_MS, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }
-      );
-    }
-  }, [result, benchPlayers]);
+  // Animates reorders/entries/exits on the reserves list (team lists animate
+  // inside TeamCard). Kept on even under prefers-reduced-motion — see TeamCard.
+  const [benchListRef] = useAutoAnimate<HTMLUListElement>({
+    disrespectUserMotionPreference: true,
+  });
 
   function flash(ids: string[]) {
     setSwappingIds(new Set(ids));
@@ -120,7 +72,7 @@ export function TeamEditor({
   // displaced player returns to the bench; both roster flags are synced.
   function substitute(ref: PlayerRef, incoming: DrawnPlayer) {
     const outgoing = result.teams[ref.teamIndex]?.players[ref.playerIndex];
-    applyEdit(substitutePlayer(result, ref, incoming));
+    setResult(substitutePlayer(result, ref, incoming));
     onSetInGame?.(incoming.id, true);
     if (outgoing) onSetInGame?.(outgoing.id, false);
     flash(outgoing ? [incoming.id, outgoing.id] : [incoming.id]);
@@ -148,7 +100,7 @@ export function TeamEditor({
       return;
     }
     // Second team player → swap the two.
-    applyEdit(swapPlayers(result, selected.ref, { teamIndex, playerIndex }));
+    setResult(swapPlayers(result, selected.ref, { teamIndex, playerIndex }));
     flash([selected.id, player.id]);
     setSelected(null);
   }
@@ -173,7 +125,7 @@ export function TeamEditor({
   // Clicking a team title includes the selected reserve into that team.
   function handleTitleClick(teamIndex: number) {
     if (!selected || selected.kind !== "bench") return;
-    applyEdit(addPlayerToTeam(result, teamIndex, selected.player));
+    setResult(addPlayerToTeam(result, teamIndex, selected.player));
     onSetInGame?.(selected.id, true);
     flash([selected.id]);
     setSelected(null);
@@ -184,7 +136,7 @@ export function TeamEditor({
     if (!selected || selected.kind !== "team") return;
     const player =
       result.teams[selected.ref.teamIndex]?.players[selected.ref.playerIndex];
-    applyEdit(removePlayerFromTeam(result, selected.ref));
+    setResult(removePlayerFromTeam(result, selected.ref));
     if (player) {
       onSetInGame?.(player.id, false);
       flash([player.id]);
@@ -211,7 +163,6 @@ export function TeamEditor({
             showStrength={showStrength}
             selectedPlayerId={selected?.kind === "team" ? selected.id : null}
             swappingIds={swappingIds}
-            registerPlayerEl={registerPlayerEl}
             onPlayerClick={handlePlayerClick}
             onSubDraw={setSubDrawTeamIndex}
             onTitleClick={benchEnabled ? handleTitleClick : undefined}
@@ -240,7 +191,7 @@ export function TeamEditor({
                 ? "Toque em outro jogador para trocar, numa reserva para substituir, ou em “Reservas” para tirá-lo do time."
                 : "Toque num jogador do time ou numa reserva para começar."}
           </p>
-          <ul className="flex flex-col gap-1">
+          <ul ref={benchListRef} className="flex flex-col gap-1">
             {benchPlayers.map((player) => {
               const swapping = swappingIds.has(player.id);
               const isSelected =
@@ -249,7 +200,6 @@ export function TeamEditor({
                 <li key={player.id}>
                   <button
                     type="button"
-                    ref={(el) => registerPlayerEl(player.id, el)}
                     onClick={() => handleBenchClick(player)}
                     aria-pressed={isSelected}
                     className={`flex w-full items-center justify-between gap-2 rounded-lg border px-2 py-1.5 text-left transition-colors ${

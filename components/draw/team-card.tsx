@@ -1,3 +1,6 @@
+"use client";
+
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Shuffle, Star } from "lucide-react";
 import type { DrawnPlayer, DrawnTeam } from "@/lib/types";
 
@@ -8,8 +11,6 @@ interface TeamCardProps {
   teamIndex?: number;
   selectedPlayerId?: string | null;
   swappingIds?: ReadonlySet<string>;
-  // Registers each player row's DOM node (used for the move animation).
-  registerPlayerEl?: (id: string, el: HTMLElement | null) => void;
   onPlayerClick?: (
     teamIndex: number,
     playerIndex: number,
@@ -41,7 +42,6 @@ export function TeamCard({
   teamIndex,
   selectedPlayerId,
   swappingIds,
-  registerPlayerEl,
   onPlayerClick,
   onSubDraw,
   onTitleClick,
@@ -49,6 +49,13 @@ export function TeamCard({
 }: TeamCardProps) {
   const interactive = onPlayerClick !== undefined && teamIndex !== undefined;
   const titleClickable = onTitleClick !== undefined && teamIndex !== undefined;
+
+  // Animates player rows entering/leaving/reordering (swaps, substitutions).
+  // Animations stay on even under prefers-reduced-motion (e.g. macOS "Reduce
+  // motion"), which silently killed the previous hand-rolled version.
+  const [playerListRef] = useAutoAnimate<HTMLUListElement>({
+    disrespectUserMotionPreference: true,
+  });
 
   return (
     <div className="rounded-2xl border border-foreground/10 p-4">
@@ -87,7 +94,7 @@ export function TeamCard({
           )}
         </div>
       </div>
-      <ul className="flex flex-col gap-1">
+      <ul ref={playerListRef} className="flex flex-col gap-1">
         {team.players.map((player, playerIndex) => {
           const content = (
             <>
@@ -113,7 +120,6 @@ export function TeamCard({
             <li key={player.id}>
               <button
                 type="button"
-                ref={(el) => registerPlayerEl?.(player.id, el)}
                 onClick={() => onPlayerClick(teamIndex, playerIndex, player)}
                 aria-pressed={selected}
                 className={`flex w-full items-center justify-between gap-2 rounded-lg border px-2 py-1.5 text-left transition-colors ${
